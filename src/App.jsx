@@ -1,4 +1,5 @@
 import { Header } from "./components/Header";
+import { Sidebar } from "./components/Sidebar";
 import styles from "./App.module.css";
 import "./styles/global.css";
 
@@ -7,7 +8,7 @@ function App() {
     <>
       <Header />
       <main className={styles.container}>
-        <aside>sidebar</aside>
+        <Sidebar />
         <section></section>
       </main>
     </>
