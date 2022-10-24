@@ -1,34 +1,56 @@
 import { Avatar } from "../Avatar";
+import { format, formatDistanceToNow } from "date-fns";
+import ptBR from "date-fns/locale/pt-BR";
 import { Comment } from "../Comment";
 import styles from "./styles.module.css";
 
-export function Post() {
+export function Post({ data }) {
+  const publishedDateFormatted = format(
+    data.publishedAt,
+    "d 'de' LLLL 'às' HH:mm'h'",
+    {
+      locale: ptBR,
+    }
+  );
+
+  const publishedDateRelativeNow = formatDistanceToNow(data.publishedAt, {
+    locale: ptBR,
+    addSuffix: true,
+  });
+
   return (
     <div className={styles.container}>
       <header>
         <div className={styles.author}>
-          <Avatar src="https://github.com/thyago608.png" />
+          <Avatar src={data.author.avatarUrl} />
           <div className={styles.authorInfo}>
-            <strong>Thyago Ribeiro</strong>
-            <span>Web Developer</span>
+            <strong>{data.author.name}</strong>
+            <span>{data.author.role}</span>
           </div>
         </div>
         <time
-          title="11 de Maio de 2022 às 08:13"
-          dateTime="2022-05-11 08:13:30"
+          title={publishedDateFormatted}
+          dateTime={data.publishedAt.toISOString()}
         >
-          Publicado há 1h
+          {publishedDateRelativeNow}
         </time>
       </header>
       <div className={styles.content}>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus
-          repellat earum dolore nesciunt. Atque nobis quam iste facere cum eaque
-          debitis sit, quasi vel expedita explicabo quidem quibusdam nihil quo!
-        </p>
-        <a href="#" className={styles.email}>
-          john.doe/doctcare
-        </a>
+        {data.content.map((line) => {
+          return (
+            <div key={line.content}>
+              {line.type === "paragraph" ? (
+                <p>{line.content}</p>
+              ) : line.type === "link" ? (
+                <p>
+                  <a href="#">{line.content}</a>
+                </p>
+              ) : (
+                <span />
+              )}
+            </div>
+          );
+        })}
         <div className={styles.hashTags}>
           <a href="#">#novoprojeto</a>
           <a href="#">#nlw</a>

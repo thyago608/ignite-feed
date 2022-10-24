@@ -1,6 +1,7 @@
 import { Header } from "./components/Header";
 import { Sidebar } from "./components/Sidebar";
 import { Post } from "./components/Post";
+import { posts } from "./mock";
 import styles from "./App.module.css";
 import "./styles/global.css";
 
@@ -11,10 +12,9 @@ function App() {
       <main className={styles.container}>
         <Sidebar />
         <section>
-          <Post />
-          <Post />
-          <Post />
-          <Post />
+          {posts.map((item) => (
+            <Post key={item.id} data={item} />
+          ))}
         </section>
       </main>
     </>
