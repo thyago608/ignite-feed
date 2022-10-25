@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Avatar } from "../Avatar";
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
@@ -6,6 +7,7 @@ import { Comment } from "../Comment";
 import styles from "./styles.module.css";
 
 export function Post({ data }) {
+  const [listCommentsRef] = useAutoAnimate();
   const [comments, setComments] = useState(["Post muito bacana, hein ?!"]);
   const [newCommentText, setNewCommentText] = useState("");
 
@@ -28,6 +30,25 @@ export function Post({ data }) {
     setComments([...comments, newCommentText]);
     setNewCommentText("");
   }
+
+  function handleNewCommentChange(comment) {
+    setNewCommentText(comment);
+    event.target.setCustomValidity("");
+  }
+
+  function handleNewCommentInvalid(event) {
+    event.target.setCustomValidity("Esse campo é obrigatório");
+  }
+
+  function deleteComment(commentToBeDelete) {
+    const commentsWithoutDeleteOne = comments.filter(
+      (comment) => comment !== commentToBeDelete
+    );
+
+    setComments(commentsWithoutDeleteOne);
+  }
+
+  const isNewCommentEmpty = newCommentText.length === 0;
 
   return (
     <div className={styles.container}>
@@ -77,15 +98,23 @@ export function Post({ data }) {
         <textarea
           placeholder="Deixe um comentário"
           value={newCommentText}
-          onChange={(e) => setNewCommentText(e.target.value)}
+          onChange={(e) => handleNewCommentChange(e.target.value)}
+          onInvalid={(e) => handleNewCommentInvalid(e)}
+          required
         />
         <footer>
-          <button type="submit">Publicar</button>
+          <button type="submit" disabled={isNewCommentEmpty}>
+            Publicar
+          </button>
         </footer>
       </form>
-      <div className={styles.commentList}>
+      <div className={styles.commentList} ref={listCommentsRef}>
         {comments.map((comment) => (
-          <Comment key={comment} content={comment} />
+          <Comment
+            key={comment}
+            content={comment}
+            onDeleteComment={deleteComment}
+          />
         ))}
       </div>
     </div>
